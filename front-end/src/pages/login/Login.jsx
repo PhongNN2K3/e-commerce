@@ -6,31 +6,67 @@ import profileImg from "../../assets/profile.png";
 const Login = () => {
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
-  const [email, setEmail] = useState("example@ex.com");
-  const [password, setPassword] = useState("123456");
   const [showPassword, setShowPassword] = useState(false);
-  const regex =
-    /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+  const spaceRegex = /\s/;
+  const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+  const handleChange = (e) => {
+    setData({
+      ...data,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
+
+    if (data.email === "" || data.password === "") {
+      if (data.email === "") {
+        setEmailError("Email không thể để trống");
+      }
+
+      if (data.password === "") {
+        setPasswordError("Mật khẩu không thể để trống");
+      }
+
+      return;
+    } else if (emailError || passwordError) {
+      return;
+    } else {
+      console.log(data);
+    }
   };
 
   useEffect(() => {
-    if (email.trim() === "") {
+    if (data.email === "") {
       setEmailError("Email không thể để trống");
-    } else if (!regex.test(email)) {
+    } else if (!regex.test(data.email)) {
       setEmailError("Email không hợp lệ");
     } else {
       setEmailError(null);
     }
-    if (password.trim() === "") {
+  }, [data.email]);
+
+  useEffect(() => {
+    if (data.password === "") {
       setPasswordError("Mật khẩu không thể để trống");
-    } else if (password.length < 6) {
+    } else if (spaceRegex.test(data.password)) {
+      setPasswordError("Mật khẩu không thể chứa khoảng trắng");
+    } else if (data.password.length < 6) {
       setPasswordError("Mật không thể chứa ít hơn 6 ký tự");
     } else {
       setPasswordError(null);
     }
-  }, [email, password]);
+  }, [data.password]);
+
+  useEffect(() => {
+    setEmailError(null);
+    setPasswordError(null);
+  }, []);
 
   return (
     <section id="login">
@@ -54,13 +90,15 @@ const Login = () => {
                   type="email"
                   id="email"
                   name="email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleChange}
+                  value={data.email}
                 />
               </div>
+              {emailError && (
+                <span className="text-red-600 font-bold">{emailError}</span>
+              )}
             </div>
-            {emailError && (
-              <span className="text-red-600 font-bold">{emailError}</span>
-            )}
+
             <div className="grid grid-cols-1 gap-2 mt-5">
               <label htmlFor="password">Mật khẩu</label>
               <div
@@ -75,7 +113,8 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handleChange}
+                  value={data.password}
                 />
                 <div
                   className="cursor-pointer text-xl"
@@ -84,19 +123,19 @@ const Login = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </div>
               </div>
+              {passwordError && (
+                <span className="text-red-600 font-bold">{passwordError}</span>
+              )}
               <Link
                 to="/forgot-password"
-                className="block w-fit ml-auto hover:text-blue-600"
+                className="text-sm block w-fit ml-auto hover:text-blue-600 transition duration-300 ease-in-out"
               >
                 Quên mật khẩu
               </Link>
             </div>
-            {passwordError && (
-              <span className="text-red-600 font-bold">{passwordError}</span>
-            )}
 
             <button
-              className="bg-red-600 px-6 py-2 max-w-[150px] mx-auto block rounded-full text-white w-full mt-4 transform hover:scale-105 transition duration-300 ease-in-out transform-origin-center will-change-transform"
+              className="bg-red-600 px-6 py-2 max-w-[150px] mx-auto block rounded-full text-white w-full mt-6 transform hover:scale-105 transition duration-300 ease-in-out transform-origin-center will-change-transform"
               type="submit"
             >
               Đăng nhập
@@ -104,7 +143,10 @@ const Login = () => {
           </form>
           <p className="text-center mt-5">
             Chưa có tài khoản?{" "}
-            <Link to="/register" className="text-blue-800 hover:text-blue-400">
+            <Link
+              to="/register"
+              className="text-blue-600 hover:text-red-600 transition duration-300 ease-in-out"
+            >
               Đăng ký
             </Link>
           </p>

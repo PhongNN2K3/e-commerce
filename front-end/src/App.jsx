@@ -6,10 +6,12 @@ function App() {
   return (
     <>
       <Header />
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
+      <div className="max-h-screen pb-16 overflow-y-auto scrollbar-thin scrollbar-thumb-gray scrollbar-rounded">
+        <main>
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </>
   );
 }
