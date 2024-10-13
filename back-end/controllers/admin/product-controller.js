@@ -24,30 +24,28 @@ const handleImageUpload = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     const {
-      image,
       title,
       description,
       category,
       brand,
       price,
       size,
-      color,
+      colors, // Array of { hexCode, image } objects
       salePrice,
       totalStock,
       averageReview,
     } = req.body;
 
-    console.log(averageReview, "averageReview");
+    console.log("Received product data: ", req.body); // Log here
 
     const newlyCreatedProduct = new Product({
-      image,
       title,
       description,
       category,
       brand,
       price,
       size,
-      color,
+      colors,
       salePrice,
       totalStock,
       averageReview,
@@ -62,7 +60,7 @@ const addProduct = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while adding product",
     });
   }
 };
@@ -90,15 +88,16 @@ const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      image,
       title,
       description,
       category,
       brand,
       price,
+      size,
       salePrice,
       totalStock,
       averageReview,
+      colors, // Array of { hexCode, image, imageName } objects
     } = req.body;
 
     let findProduct = await Product.findById(id);
@@ -108,6 +107,7 @@ const editProduct = async (req, res) => {
         message: "Product not found",
       });
 
+    // Update the product fields
     findProduct.title = title || findProduct.title;
     findProduct.description = description || findProduct.description;
     findProduct.category = category || findProduct.category;
@@ -115,11 +115,13 @@ const editProduct = async (req, res) => {
     findProduct.price = price === "" ? 0 : price || findProduct.price;
     findProduct.salePrice =
       salePrice === "" ? 0 : salePrice || findProduct.salePrice;
+    findProduct.size = size || findProduct.size;
     findProduct.totalStock = totalStock || findProduct.totalStock;
-    findProduct.image = image || findProduct.image;
     findProduct.averageReview = averageReview || findProduct.averageReview;
+    findProduct.colors = colors || findProduct.colors; // Update the colors field with the new/updated images and file names
 
     await findProduct.save();
+
     res.status(200).json({
       success: true,
       data: findProduct,
@@ -128,7 +130,7 @@ const editProduct = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while updating the product",
     });
   }
 };
@@ -142,12 +144,12 @@ const deleteProduct = async (req, res) => {
     if (!product)
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: "Khômg tìm thấy sản phẩm",
       });
 
     res.status(200).json({
       success: true,
-      message: "Product delete successfully",
+      message: "Xóa sản phẩm thành công",
     });
   } catch (e) {
     console.log(e);

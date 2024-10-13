@@ -61,8 +61,8 @@ export const addProductFormElements = [
       { id: "men", label: "Nam" },
       { id: "women", label: "Nữ" },
       { id: "kids", label: "Trẻ em" },
-      { id: "accessories", label: "phụ kiện" },
-      { id: "footwear", label: "giày dép" },
+      { id: "accessories", label: "Phụ kiện" },
+      { id: "footwear", label: "Giày dép" },
     ],
   },
   {
@@ -100,13 +100,6 @@ export const addProductFormElements = [
     placeholder: "Nhập số lượng hàng tồn kho",
   },
   {
-    label: "Màu sắc",
-    name: "color",
-    componentType: "input",
-    type: "color",
-    placeholder: "Chọn màu sản phẩm",
-  },
-  {
     label: "Kích thước",
     name: "size",
     componentType: "checkbox",
@@ -117,5 +110,10 @@ export const addProductFormElements = [
       { id: "extra-large", label: "XL" },
       { id: "double-extra-large", label: "XXL" },
     ],
+  },
+  {
+    label: "Màu sắc",
+    name: "colors",
+    componentType: "colors",
   },
 ];

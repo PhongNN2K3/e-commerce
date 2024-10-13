@@ -45,6 +45,28 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk(
+  "/auth/logout",
+  async ({ rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data.errors) {
+        return rejectWithValue(error.response.data.errors); // Return the errors object
+      }
+      return rejectWithValue({ general: "Có lỗi xảy ra" });
+    }
+  }
+);
+
 export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
@@ -114,6 +136,11 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
       });
   },
 });

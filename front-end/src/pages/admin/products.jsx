@@ -1,4 +1,4 @@
-import ProductImageUpload from "@/components/admin/image-upload";
+import AdminProductTile from "@/components/admin/product-tile";
 import CommonForm from "@/components/common/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,11 +8,17 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { addProductFormElements } from "@/config";
-import { Fragment, useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  addNewProduct,
+  deleteProduct,
+  editProduct,
+  fetchAllProducts,
+} from "@/store/admin/products-slice";
+import { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const initialFormData = {
-  image: null,
   title: "",
   description: "",
   category: "",
@@ -20,7 +26,9 @@ const initialFormData = {
   price: "",
   salePrice: "",
   totalStock: "",
-  color: "",
+  colors: [
+    { hexCode: "", imageFile: null, uploadedImageUrl: "", fileName: "" },
+  ], // Store hexCode, image file, and uploaded image URL
   size: [],
   averageReview: 0,
 };
@@ -35,43 +43,56 @@ function AdminProducts() {
   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [colorImages, setColorImages] = useState([]);
 
-  //const { productList } = useSelector((state) => state.adminProducts);
+  const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
 
-  /*function onSubmit(event) {
+  const resetForm = () => {
+    setFormData(initialFormData); // Reset formData to initial structure
+    setCurrentEditedId(null); // Clear current edited ID
+  };
+
+  const onSubmit = (event) => {
     event.preventDefault();
 
+    const preparedColors = formData.colors.map((color) => ({
+      hexCode: color.hexCode,
+      image: color.image ? color.image : color.uploadedImageUrl, // Use the uploaded image URL
+      fileName: color.fileName, // Use the original file name for image upload verification
+    }));
+
+    console.log("Form Data Before Submission: ", {
+      ...formData,
+      colors: preparedColors,
+    });
+    // If currentEditedId is not null, it means the user is editing an existing product
     currentEditedId !== null
       ? dispatch(
           editProduct({
             id: currentEditedId,
-            formData,
+            formData: { ...formData, colors: preparedColors },
           })
         ).then((data) => {
           console.log(data, "edit");
 
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
-            setFormData(initialFormData);
+            resetForm();
             setOpenCreateProductsDialog(false);
-            setCurrentEditedId(null);
+            toast.success("Sản phẩm đã được chỉnh sửa");
           }
         })
-      : dispatch(
-          addNewProduct({
-            ...formData,
-            image: uploadedImageUrl,
-          })
-        ).then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
-            setOpenCreateProductsDialog(false);
-            setImageFile(null);
-            setFormData(initialFormData);
-            toast("Product add successfully");
+      : dispatch(addNewProduct({ ...formData, colors: preparedColors })).then(
+          (data) => {
+            if (data?.payload?.success) {
+              dispatch(fetchAllProducts());
+              resetForm();
+              setOpenCreateProductsDialog(false);
+              toast.success("Sản phẩm đã được thêm");
+              console.log(data);
+            }
           }
-        });
-  }
+        );
+  };
 
   function handleDelete(getCurrentProductId) {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
@@ -82,17 +103,19 @@ function AdminProducts() {
   }
 
   function isFormValid() {
-    return Object.keys(formData)
-      .filter((currentKey) => currentKey !== "averageReview")
-      .map((key) => formData[key] !== "")
-      .every((item) => item);
+    return (
+      Object.keys(formData)
+        //.filter((currentKey) => currentKey !== "averageReview")
+        .map((key) => formData[key] !== "")
+        .every((item) => item)
+    );
   }
 
   useEffect(() => {
     dispatch(fetchAllProducts());
-  }, [dispatch]);*/
+  }, [dispatch]);
 
-  console.log(formData, "productList");
+  console.log(productList, formData, "productList");
 
   return (
     <Fragment>
@@ -102,7 +125,7 @@ function AdminProducts() {
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {/*productList && productList.length > 0
+        {productList && productList.length > 0
           ? productList.map((productItem) => (
               <AdminProductTile
                 setFormData={setFormData}
@@ -112,7 +135,7 @@ function AdminProducts() {
                 handleDelete={handleDelete}
               />
             ))
-          : null*/}
+          : null}
       </div>
       <Sheet
         open={openCreateProductsDialog}
@@ -130,23 +153,17 @@ function AdminProducts() {
                 : "Thêm mới sản phẩm"}
             </SheetTitle>
           </SheetHeader>
-          <ProductImageUpload
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            uploadedImageUrl={uploadedImageUrl}
-            setUploadedImageUrl={setUploadedImageUrl}
-            setImageLoadingState={setImageLoadingState}
-            imageLoadingState={imageLoadingState}
-            isEditMode={currentEditedId !== null}
-          />
           <div className="py-6">
             <CommonForm
-              //onSubmit={onSubmit}
+              onSubmit={onSubmit}
               formData={formData}
               setFormData={setFormData}
-              buttonText={currentEditedId !== null ? "Chỉnh sửa" : "Thêm"}
+              buttonText={
+                currentEditedId !== null ? "Chỉnh sửa" : "Thêm sản phẩm"
+              }
+              isEditMode={currentEditedId !== null}
               formControls={addProductFormElements}
-              //isBtnDisabled={!isFormValid()}
+              isBtnDisabled={!isFormValid()}
             />
           </div>
         </SheetContent>

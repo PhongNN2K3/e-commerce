@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
-
 const ProductSchema = new mongoose.Schema(
   {
-    image: String,
     title: String,
     description: String,
     category: String,
     brand: String,
     price: Number,
-    size: [String],
-    color: [String],
     salePrice: Number,
     totalStock: Number,
     averageReview: Number,
+    size: [String],
+    colors: [
+      {
+        hexCode: String,
+        image: String, // Store the image URL
+        fileName: String, // Store the file name
+      },
+    ],
   },
   { timestamps: true }
 );
