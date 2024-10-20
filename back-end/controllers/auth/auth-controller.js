@@ -124,7 +124,12 @@ const loginController = async (req, res) => {
 
     // If no errors, generate token and log the user in
     const token = jwt.sign(
-      { id: user._id, role: user.role, email: user.email },
+      {
+        id: user._id,
+        role: user.role,
+        email: user.email,
+        username: user.username,
+      },
       "CLIENT_SECRET_KEY",
       { expiresIn: "1d" }
     );
@@ -137,6 +142,7 @@ const loginController = async (req, res) => {
         _id: user._id,
         email: user.email,
         role: user.role,
+        username: user.username,
       },
     });
   } catch (error) {

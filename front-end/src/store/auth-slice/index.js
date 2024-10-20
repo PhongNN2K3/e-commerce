@@ -47,23 +47,17 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   "/auth/logout",
-  async ({ rejectWithValue }) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
 
-      return response.data;
-    } catch (error) {
-      if (error.response && error.response.data.errors) {
-        return rejectWithValue(error.response.data.errors); // Return the errors object
+  async () => {
+    const response = await axios.post(
+      "http://localhost:5000/api/auth/logout",
+      {},
+      {
+        withCredentials: true,
       }
-      return rejectWithValue({ general: "Có lỗi xảy ra" });
-    }
+    );
+
+    return response.data;
   }
 );
 

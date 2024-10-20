@@ -3,8 +3,16 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+
+import adminOrderRoute from "./routes/admin/order-routes.js";
 import adminProductsRoute from "./routes/admin/products-routes.js";
+
 import authRoute from "./routes/auth/auth-routes.js";
+
+import shopAddressRoute from "./routes/shop/address-routes.js";
+import shopCartRoute from "./routes/shop/cart-routes.js";
+import shopOrderRoute from "./routes/shop/order-routes.js";
+import shopProductsRoute from "./routes/shop/products-routes.js";
 
 dotenv.config();
 mongoose
@@ -33,6 +41,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/admin/products", adminProductsRoute);
+app.use("/api/admin/orders", adminOrderRoute);
+app.use("/api/shop/products", shopProductsRoute);
+app.use("/api/shop/cart", shopCartRoute);
+app.use("/api/shop/address", shopAddressRoute);
+app.use("/api/shop/order", shopOrderRoute);
 
 const PORT = process.env.PORT || 5000;
 

@@ -119,7 +119,7 @@ function AdminProducts() {
 
   return (
     <Fragment>
-      <div className="mb-5 w-full flex justify-end">
+      <div className="sticky top-0 z-40 mb-5 w-full flex justify-end">
         <Button onClick={() => setOpenCreateProductsDialog(true)}>
           Thêm mới sản phẩm
         </Button>
