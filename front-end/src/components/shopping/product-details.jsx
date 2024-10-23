@@ -1,10 +1,15 @@
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { setProductDetails } from "@/store/shop/products-slice";
+import { addReview, getReviews } from "@/store/shop/review-slice";
+import { StarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import StarRatingComponent from "../common/star-rating";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
@@ -15,15 +20,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
-  //const { reviews } = useSelector((state) => state.shopReview);
+  const { reviews } = useSelector((state) => state.shopReview);
   const [selectedColorIndex, setSelectedColorIndex] = useState(0); // New state for selected color
   const [selectedSize, setSelectedSize] = useState(""); // State for selected size
 
-  /*function handleRatingChange(getRating) {
+  function handleRatingChange(getRating) {
     console.log(getRating, "getRating");
 
     setRating(getRating);
-  }*/
+  }
 
   // Set default size on initial render
   useEffect(() => {
@@ -85,36 +90,44 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     setSelectedSize("");
   }
 
-  /*function handleAddReview() {
+  function handleAddReview() {
     dispatch(
       addReview({
         productId: productDetails?._id,
-        userId: user?.id,
-        userName: user?.userName,
+        userId: user?.user?.id || user?.user?._id,
+        username: user?.user?.username,
         reviewMessage: reviewMsg,
         reviewValue: rating,
       })
     ).then((data) => {
+      console.log("Added review", data);
+
       if (data.payload.success) {
         setRating(0);
         setReviewMsg("");
         dispatch(getReviews(productDetails?._id));
-        toast.success("Review added successfully!");
+        toast.success("Đánh giá sản phẩm thành công!");
+      }
+      if (data.error && data.error.message.includes("400")) {
+        toast.error("Bạn đã đánh sản phẩm này");
+      } else if (data.error && data.error.message.includes("403")) {
+        toast.error("Bạn cần mua sản phẩm này trước khi đánh giá");
       }
     });
-  }*/
+  }
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (productDetails !== null) dispatch(getReviews(productDetails?._id));
   }, [productDetails]);
 
   console.log(reviews, "reviews");
+  console.log(user, "user");
 
   const averageReview =
     reviews && reviews.length > 0
       ? reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
         reviews.length
-      : 0;*/
+      : 0;
 
   // Handler for color selection
   const handleColorSelect = (index) => {
@@ -141,10 +154,36 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             className="aspect-square w-full object-cover"
           />
         </div>
-        <div className="">
+        <div className="max-h-[600px] overflow-y-auto">
           <div>
             <h1 className="text-xl font-extrabold">{productDetails?.title}</h1>
           </div>
+
+          <div className="flex items-center gap-2 my-2">
+            <div className="flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <div
+                  className={`p-1 rounded-full transition-colors ${
+                    star <= averageReview ? "text-yellow-500" : "text-black"
+                  }`}
+                >
+                  <StarIcon
+                    style={{
+                      width: `14px`,
+                      height: `14px`,
+                    }} // Set star size dynamically relative to button size
+                    className={`${
+                      star <= averageReview ? "fill-yellow-500" : "fill-gray-50"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+            <span className="text-muted-foreground">
+              ({averageReview.toFixed(1)})
+            </span>
+          </div>
+
           <div className="flex items-center justify-between">
             <p
               className={`text-xl font-bold text-primary ${
@@ -157,14 +196,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <p className="text-xl font-bold">{productDetails?.salePrice}đ</p>
             ) : null}
           </div>
-          {/*<div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-0.5">
-              <StarRatingComponent rating={averageReview} />
-            </div>
-            <span className="text-muted-foreground">
-              ({averageReview.toFixed(2)})
-            </span>
-          </div>*/}
 
           {/* Color selection */}
           <div className="mt-5">
@@ -224,61 +255,88 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             )}
           </div>
           <div>
-            <p className="text-sm mb-5 mt-4 overflow-y-auto max-h-[180px]">
+            <p className="text-sm mb-5 mt-4 overflow-y-auto max-h-[300px]">
               {productDetails?.description}
             </p>
           </div>
           <Separator />
-          {/*<div className="max-h-[300px] overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Đánh giá</h2>
-            <div className="grid gap-6">
-              {reviews && reviews.length > 0 ? (
-                reviews.map((reviewItem, index) => (
-                  <div key={index} className="flex gap-4">
-                    <Avatar className="w-10 h-10 border">
-                      <AvatarFallback>
-                        {reviewItem?.userName[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold">{reviewItem?.userName}</h3>
+          {
+            <div className="">
+              <h2 className="text-xl font-bold mb-4">Đánh giá</h2>
+              <div className="grid gap-6 max-h-[300px] overflow-auto">
+                {reviews && reviews.length > 0 ? (
+                  reviews.map((reviewItem, index) => (
+                    <div key={index} className="flex gap-4">
+                      <Avatar className="w-10 h-10 border">
+                        <AvatarFallback>
+                          {reviewItem?.username[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold">{reviewItem?.username}</h3>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <div className="flex items-center gap-2 my-2">
+                            <div className="flex items-center gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <div
+                                  className={`p-1 rounded-full transition-colors ${
+                                    star <= reviewItem?.reviewValue
+                                      ? "text-yellow-500"
+                                      : "text-black"
+                                  }`}
+                                >
+                                  <StarIcon
+                                    style={{
+                                      width: `14px`,
+                                      height: `14px`,
+                                    }} // Set star size dynamically relative to button size
+                                    className={`${
+                                      star <= reviewItem?.reviewValue
+                                        ? "fill-yellow-500"
+                                        : "fill-gray-50"
+                                    }`}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                            <span className="text-muted-foreground">
+                              ({reviewItem?.reviewValue})
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-sm">{reviewItem.reviewMessage}</p>
                       </div>
-                      <div className="flex items-center gap-0.5">
-                        <StarRatingComponent rating={reviewItem?.reviewValue} />
-                      </div>
-                      <p className="text-muted-foreground">
-                        {reviewItem.reviewMessage}
-                      </p>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <h1>Không có đánh giá nào</h1>
-              )}
-            </div>
-            <div className="mt-10 flex-col flex gap-2">
-              <Label>Đánh giá</Label>
-              <div className="flex gap-1">
-                <StarRatingComponent
-                  rating={rating}
-                  handleRatingChange={handleRatingChange}
-                />
+                  ))
+                ) : (
+                  <h1>Không có đánh giá nào</h1>
+                )}
               </div>
-              <Input
-                name="reviewMsg"
-                value={reviewMsg}
-                onChange={(event) => setReviewMsg(event.target.value)}
-                placeholder="Hãy viết đánh giá ở đây..."
-              />
-              <Button
-                onClick={handleAddReview}
-                disabled={reviewMsg.trim() === ""}
-              >
-                Gửi
-              </Button>
+              <div className="mt-10 flex-col flex gap-2">
+                <div className="flex gap-1">
+                  <StarRatingComponent
+                    rating={rating}
+                    handleRatingChange={handleRatingChange}
+                    dimension={24}
+                  />
+                </div>
+                <Input
+                  name="reviewMsg"
+                  value={reviewMsg}
+                  onChange={(event) => setReviewMsg(event.target.value)}
+                  placeholder="Hãy viết đánh giá ở đây..."
+                />
+                <Button
+                  onClick={handleAddReview}
+                  //disabled={reviewMsg.trim() === ""}
+                >
+                  Gửi
+                </Button>
+              </div>
             </div>
-          </div>*/}
+          }
         </div>
       </DialogContent>
     </Dialog>

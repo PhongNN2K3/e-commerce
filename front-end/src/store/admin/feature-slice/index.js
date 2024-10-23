@@ -10,7 +10,7 @@ export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/common/feature/get`
+      `http://localhost:5000/api/admin/feature/get`
     );
 
     return response.data;
@@ -21,7 +21,7 @@ export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
     const response = await axios.post(
-      `http://localhost:5000/api/common/feature/add`,
+      `http://localhost:5000/api/admin/feature/add`,
       { image }
     );
 
@@ -29,8 +29,8 @@ export const addFeatureImage = createAsyncThunk(
   }
 );
 
-const commonSlice = createSlice({
-  name: "commonSlice",
+const featureSlice = createSlice({
+  name: "featureSlice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -49,4 +49,4 @@ const commonSlice = createSlice({
   },
 });
 
-export default commonSlice.reducer;
+export default featureSlice.reducer;

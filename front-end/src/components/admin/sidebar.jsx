@@ -43,9 +43,11 @@ const adminSidebarMenuitems = [
 
 const MenuItems = ({ setOpen }) => {
   const navigate = useNavigate();
+  const path = "/admin/" + window.location.pathname.split("/")[2];
+  console.log(path, "path");
 
   return (
-    <nav className="mt-8 flex-col flex gap-2">
+    <nav className="mt-8 flex-col flex gap-2 font-semibold">
       {adminSidebarMenuitems.map((menuItem) => (
         <div
           key={menuItem.id}
@@ -53,7 +55,11 @@ const MenuItems = ({ setOpen }) => {
             navigate(menuItem.path);
             setOpen ? setOpen(false) : null;
           }}
-          className="flex cursor-pointer text-xl items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className={
+            menuItem.path === path
+              ? "flex cursor-pointer text-xl items-center gap-2 rounded-md px-3 py-2 bg-muted text-foreground"
+              : "flex cursor-pointer text-xl items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+          }
         >
           {menuItem.icon}
           <span>{menuItem.label}</span>

@@ -24,11 +24,18 @@ function ShoppingOrders() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { orderList, orderDetails } = useSelector((state) => state.shopOrder);
+  const shippingStatus = {
+    pending: "Đang chờ xử lý",
+    inProcess: "Đang xử lý",
+    inShipping: "Đang giao",
+    delivered: "Đã giao",
+    rejected: "Đã hủy",
+  };
 
   function handleFetchOrderDetails(getId) {
     dispatch(getOrderDetails(getId));
   }
-
+  const shipping = shippingStatus[orderDetails?.orderStatus];
   useEffect(() => {
     dispatch(getAllOrdersByUserId(user?.user?.id || user?.user?._id));
   }, [dispatch]);
@@ -74,7 +81,11 @@ function ShoppingOrders() {
                             : "bg-black"
                         }`}
                       >
-                        {orderItem?.orderStatus}
+                        {shippingStatus.hasOwnProperty(
+                          orderItem?.orderStatus
+                        ) && orderItem?.orderStatus
+                          ? shippingStatus[orderItem?.orderStatus]
+                          : orderItem?.orderStatus}
                       </Badge>
                     </TableCell>
                     <TableCell>{orderItem?.totalAmount}đ</TableCell>

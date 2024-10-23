@@ -20,7 +20,6 @@ function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
   const shippingStatus = {
     pending: "Đang chờ xử lý",
     inProcess: "Đang xử lý",
@@ -28,6 +27,7 @@ function AdminOrderDetailsView({ orderDetails }) {
     delivered: "Đã giao",
     rejected: "Đã hủy",
   };
+
   console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
@@ -46,10 +46,8 @@ function AdminOrderDetailsView({ orderDetails }) {
     });
   }
 
-  console.log(shippingStatus[orderDetails?.orderStatus], "ship");
-
   return (
-    <DialogContent className="sm:max-w-[600px]">
+    <DialogContent className="sm:max-w-[600px] max-h-[600px] overflow-y-auto">
       <div className="grid gap-6 text-sm">
         <div className="grid gap-1">
           <div className="flex mt-6 items-center justify-between">
@@ -84,10 +82,10 @@ function AdminOrderDetailsView({ orderDetails }) {
                     : "bg-black"
                 }`}
               >
-                {orderDetails?.orderStatus === "Đã xác nhận" ||
-                orderDetails?.orderStatus === "Đã hủy"
-                  ? orderDetails?.orderStatus
-                  : shippingStatus[orderDetails?.orderStatus]}
+                {shippingStatus.hasOwnProperty(orderDetails?.orderStatus) &&
+                orderDetails?.orderStatus
+                  ? shippingStatus[orderDetails?.orderStatus]
+                  : orderDetails?.orderStatus}
               </Badge>
             </Label>
           </div>

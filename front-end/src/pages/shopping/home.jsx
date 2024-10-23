@@ -2,7 +2,7 @@ import ProductDetailsDialog from "@/components/shopping/product-details";
 import ShoppingProductTile from "@/components/shopping/product-tile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getFeatureImages } from "@/store/common-slice";
+import { getFeatureImages } from "@/store/admin/feature-slice";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import {
   fetchAllFilteredProducts,
@@ -22,10 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Adidas from "../../assets/adidas.jpg";
-import bannerOne from "../../assets/banner1.jpg";
-import bannerTwo from "../../assets/banner2.jpg";
-import bannerThree from "../../assets/banner3.jpg";
-import bannerFour from "../../assets/banner4.jpg";
 import HM from "../../assets/h&m.jpg";
 import Levi from "../../assets/levis.png";
 import Nike from "../../assets/nike.png";
@@ -55,13 +51,11 @@ function ShoppingHome() {
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
-  const { featureImageList } = useSelector((state) => state.commonFeature);
+  const { featureImageList } = useSelector((state) => state.adminFeature);
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
-
-  const slides = [bannerOne, bannerTwo, bannerThree, bannerFour];
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -135,11 +129,11 @@ function ShoppingHome() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
     }, 15000);
 
     return () => clearInterval(timer);
-  }, [slides]);
+  }, [featureImageList]);
 
   useEffect(() => {
     dispatch(
@@ -157,10 +151,10 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col">
       <div className="relative w-full h-[600px] overflow-hidden">
-        {slides && slides.length > 0
-          ? slides.map((slide, index) => (
+        {featureImageList && featureImageList.length > 0
+          ? featureImageList.map((slide, index) => (
               <img
-                src={slide}
+                src={slide?.image}
                 key={index}
                 className={`${
                   index === currentSlide ? "opacity-100" : "opacity-0"
@@ -175,7 +169,9 @@ function ShoppingHome() {
           size="icon"
           onClick={() =>
             setCurrentSlide(
-              (prevSlide) => (prevSlide - 1 + slides.length) % slides.length
+              (prevSlide) =>
+                (prevSlide - 1 + featureImageList.length) %
+                featureImageList.length
             )
           }
           className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
@@ -188,7 +184,9 @@ function ShoppingHome() {
           variant="outline"
           size="icon"
           onClick={() =>
-            setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
+            setCurrentSlide(
+              (prevSlide) => (prevSlide + 1) % featureImageList.length
+            )
           }
           className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
         >

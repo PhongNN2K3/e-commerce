@@ -6,6 +6,13 @@ import { Separator } from "../ui/separator";
 
 function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
+  const shippingStatus = {
+    pending: "Đang chờ xử lý",
+    inProcess: "Đang xử lý",
+    inShipping: "Đang giao",
+    delivered: "Đã giao",
+    rejected: "Đã hủy",
+  };
 
   return (
     <DialogContent className="sm:max-w-[600px]">
@@ -43,7 +50,10 @@ function ShoppingOrderDetailsView({ orderDetails }) {
                     : "bg-black"
                 }`}
               >
-                {orderDetails?.orderStatus}
+                {shippingStatus.hasOwnProperty(orderDetails?.orderStatus) &&
+                orderDetails?.orderStatus
+                  ? shippingStatus[orderDetails?.orderStatus]
+                  : orderDetails?.orderStatus}
               </Badge>
             </Label>
           </div>

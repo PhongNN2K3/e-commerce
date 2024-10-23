@@ -70,7 +70,7 @@ const getProductDetails = async (req, res) => {
       success: true,
       data: product,
     });
-  } catch (e) {
+  } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,

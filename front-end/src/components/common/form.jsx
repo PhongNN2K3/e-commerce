@@ -146,7 +146,11 @@ const CommonForm = ({
             <SelectContent>
               {control.options && control.options.length > 0
                 ? control.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
+                    <SelectItem
+                      className="cursor-pointer"
+                      key={optionItem.id}
+                      value={optionItem.id}
+                    >
                       {optionItem.label}
                     </SelectItem>
                   ))

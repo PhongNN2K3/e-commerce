@@ -23,6 +23,7 @@ import ShoppingHome from "./pages/shopping/home";
 import ShoppingListing from "./pages/shopping/listing";
 import PaymentSuccessPage from "./pages/shopping/payment-success";
 import PaypalReturnPage from "./pages/shopping/paypal-return";
+import SearchProducts from "./pages/shopping/search";
 import UnAuth from "./pages/shopping/unauth";
 import { checkAuth } from "./store/auth-slice";
 
@@ -97,6 +98,7 @@ function App() {
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
+          <Route path="search" element={<SearchProducts />} />
         </Route>
         <Route path="/unauth-page" element={<UnAuth />} />
         <Route path="*" element={<NotFound />} />

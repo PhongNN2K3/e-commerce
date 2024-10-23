@@ -23,6 +23,13 @@ function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
   const dispatch = useDispatch();
+  const shippingStatus = {
+    pending: "Đang chờ xử lý",
+    inProcess: "Đang xử lý",
+    inShipping: "Đang giao",
+    delivered: "Đã giao",
+    rejected: "Đã hủy",
+  };
 
   function handleFetchOrderDetails(getId) {
     dispatch(getOrderDetailsForAdmin(getId));
@@ -72,7 +79,11 @@ function AdminOrdersView() {
                             : "bg-black"
                         }`}
                       >
-                        {orderItem?.orderStatus}
+                        {shippingStatus.hasOwnProperty(
+                          orderItem?.orderStatus
+                        ) && orderItem?.orderStatus
+                          ? shippingStatus[orderItem?.orderStatus]
+                          : orderItem?.orderStatus}
                       </Badge>
                     </TableCell>
                     <TableCell>{orderItem?.totalAmount}đ</TableCell>
