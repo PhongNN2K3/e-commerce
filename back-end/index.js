@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import adminFeatureRoute from "./routes/admin/feature-routes.js";
 import adminOrderRoute from "./routes/admin/order-routes.js";
 import adminProductsRoute from "./routes/admin/products-routes.js";
+import adminUserRoute from "./routes/admin/user-routes.js";
 
 import authRoute from "./routes/auth/auth-routes.js";
 
@@ -46,6 +47,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/admin/products", adminProductsRoute);
 app.use("/api/admin/orders", adminOrderRoute);
 app.use("/api/admin/feature", adminFeatureRoute);
+app.use("/api/admin/user", adminUserRoute);
 app.use("/api/shop/products", shopProductsRoute);
 app.use("/api/shop/cart", shopCartRoute);
 app.use("/api/shop/address", shopAddressRoute);
